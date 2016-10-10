@@ -113,7 +113,7 @@ This will tell `savery` to use the [mime-types](https://github.com/jshttp/mime-t
   * Safari <6
 
 Please note that it is highly recommended to include a `Promise` polyfill, as it will be needed for `savery` to work in the following environments:
-* IE 10/111
+* IE 10/11
 * IE Mobile 10/11
 * Safari <7.1
 * iOS Safari <8
