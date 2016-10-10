@@ -112,6 +112,13 @@ This will tell `savery` to use the [mime-types](https://github.com/jshttp/mime-t
   * Opera <15
   * Safari <6
 
+Please note that it is highly recommended to include a `Promise` polyfill, as it will be needed for `savery` to work in the following environments:
+* IE 10/111
+* IE Mobile 10/11
+* Safari <7.1
+* iOS Safari <8
+* Android browser <4.4.4
+
 ### Additional information
 
 The `data` property in `savery` will accept anything for use in the `Blob` construction, however `canvas` elements specifically need to have the data converted by the `canvas.toBlob()` method prior to calling via `savery`.
