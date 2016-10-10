@@ -76,7 +76,7 @@ This is an example using AJAX calls, however the same reusability is possible in
 
 **savery(filename: string = 'download.txt', saveryOptions: Object = {}): Function**
 
-The `savery` function accepts the `filename` and `options` parameter, both with defaults. 
+The `savery` function accepts the `filename` and `options` parameter, both with defaults. It returns a `saveryInstance` that has the attributes passed applied.
 
 **saveryOptions**
 ```javascript
@@ -93,6 +93,36 @@ The `savery` function accepts the `filename` and `options` parameter, both with 
 ```
 
 All `saveryOptions` properties are optional, and `type` specifically will default to being intuited from the filename extension and that extension's standard MIME type. The `shouldAutoBom` feature automatically provides Unicode text encoding hints (see [byte-order mark](https://en.wikipedia.org/wiki/Byte_order_mark) for more details).
+
+**saveryInstance.save(): Promise**
+
+This will execute the saving of the file, and return the `Promise` of the file's processing. This allows you to chain the results:
+
+```javascript
+const saveryInstance = savery('foo.txt');
+
+saveryInstance.save()
+  .then((instance) => {
+    console.log(instance); // instance after completion
+  })
+  .catch((instance) => {
+    console.log(instance); // instance after the error completion
+    console.error(instance.error); // completion error
+  });
+```
+
+The lifecycle methods shown above in options are fired as part of the save process in the order expected:
+* `onBeforeSave` (before all other execution)
+* `onStartSave` (before blob is created)
+* `onEndSave` (after blob is created and save is attempted)
+* `onAfterSave` (after all other execution)
+
+**saveryInstance.abort(): void**
+
+This will abort the instance execution immediately. This fires two methods in the order shown:
+
+* `onAbort` (immediately upon aborting)
+* `onError` (once aborted, internally it fires the `onError` so that the `.catch()` in the chain is also called)
 
 ### Advanced usage
 
