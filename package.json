@@ -28,7 +28,7 @@
     ]
   },
   "bugs": {
-    "url": "https://github.com/planttheidea/savery/issues"
+    "url": "https://github.com/rapid7/savery/issues"
   },
   "dependencies": {
     "mime-types": "^2.1.12"
@@ -70,7 +70,7 @@
     "webpack": "1.13.2",
     "webpack-dev-server": "1.16.2"
   },
-  "homepage": "https://github.com/planttheidea/savery#readme",
+  "homepage": "https://github.com/rapid7/savery#readme",
   "keywords": [
     "save",
     "file",
@@ -82,7 +82,7 @@
   "name": "savery",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/planttheidea/savery.git"
+    "url": "git+https://github.com/rapid7/savery.git"
   },
   "scripts": {
     "build": "NODE_ENV=development SAVERY=full webpack --progress --colors",
@@ -100,5 +100,5 @@
     "test:watch": "NODE_ENV=test ava --no-cache --verbose --watch",
     "transpile": "NODE_ENV=production ./node_modules/babel-cli/lib/babel/index.js -d lib/ src/"
   },
-  "version": "1.0.1"
+  "version": "1.0.2"
 }
