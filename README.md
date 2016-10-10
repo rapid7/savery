@@ -1,7 +1,5 @@
 # savery
 
-Save files on the client side with ease.
-
 ### Table of contents
 * [Installation](#installation)
 * [Usage](#usage)
