@@ -7,7 +7,7 @@ Save files on the client side with ease.
 * [Usage](#usage)
 * [Methods](#methods)
 * [Advanced usage](#advanged-usage)
-* [Supported browser](#supported-browsers)
+* [Supported browsers](#supported-browsers)
 * [Additional information](#additional-information)
 * [Development](#development)
 
