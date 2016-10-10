@@ -74,7 +74,7 @@ This is an example using AJAX calls, however the same reusability is possible in
 
 ### Methods
 
-**savery(filename: string = 'download.txt', saveryOptions: Object = {}): Function**
+**savery(filename: string = 'download.txt', saveryOptions: Object = {}): saveryInstance**
 
 The `savery` function accepts the `filename` and `options` parameter, both with defaults. It returns a `saveryInstance` that has the attributes passed applied.
 
