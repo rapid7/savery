@@ -72,11 +72,10 @@
   },
   "homepage": "https://github.com/planttheidea/savery#readme",
   "keywords": [
-    "react",
-    "style",
-    "css",
-    "css-modules",
-    "postcss"
+    "save",
+    "file",
+    "blob",
+    "filesaver"
   ],
   "license": "MIT",
   "main": "lib/index.js",
