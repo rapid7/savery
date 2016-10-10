@@ -2,6 +2,15 @@
 
 Save files on the client side with ease.
 
+### Table of contents
+* [Installation](#installation)
+* [Usage](#usage)
+* [Methods](#methods)
+* [Advanced usage](#advanged-usage)
+* [Supported browser](#supported-browsers)
+* [Additional information](#additional-information)
+* [Development](#development)
+
 ### Installation
 
 ```
@@ -77,6 +86,17 @@ The `savery` function accepts the `filename` and `options` parameter, both with 
 
 All `saveryOptions` properties are optional, and `type` specifically will default to being intuited from the filename extension and that extension's standard MIME type.
 
+### Advanced usage
+
+`savery` uses a list of commonly-used MIME types which is intended to be comprehensive enough for most common use cases, however if you want to include the complete list of MIME types in your package you can do either of the following:
+
+* Build systems (`webpack`, `browserify`, etc.)
+  * Add the `SAVERY=full` environment variable to the command that runs your build script
+* `<script>` tag
+  * Use the `savery-full` script instead of the `savery` script
+  
+This will tell `savery` to use the [mime-types](https://github.com/jshttp/mime-types) package instead of the local list. 
+
 ### Supported browsers
 
 * Full support
@@ -93,14 +113,6 @@ All `saveryOptions` properties are optional, and `type` specifically will defaul
   * Firefox <20
   * Opera <15
   * Safari <6
-  
-### Feature detection
-
-```javscript
-try {
-  const isSaverySupported = !!new Blob;
-} catch(e) {}
-```
 
 ### Additional information
 

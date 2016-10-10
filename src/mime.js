@@ -35,6 +35,7 @@ const MIME_TYPES = {
   rtf: 'text/rtf',
   svg: 'image/svg+xml',
   text: 'text/plain',
+  torrent: 'application/x-bittorrent',
   txt: 'text/plain',
   tiff: 'image/tiff',
   war: 'application/java-archive',
