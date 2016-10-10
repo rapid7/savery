@@ -79,12 +79,12 @@ The `savery` function accepts the `filename` and `options` parameter, both with 
   onError: ?Function,
   onStartSave: ?Function,
   onEndSave: ?Function,
-  shouldAutoBom: ?boolean = false,
+  shouldAutoBom: ?boolean = true,
   type: ?string
 }
 ```
 
-All `saveryOptions` properties are optional, and `type` specifically will default to being intuited from the filename extension and that extension's standard MIME type.
+All `saveryOptions` properties are optional, and `type` specifically will default to being intuited from the filename extension and that extension's standard MIME type. The `shouldAutoBom` feature automatically provides Unicode text encoding hints (see [byte-order mark](https://en.wikipedia.org/wiki/Byte_order_mark) for more details).
 
 ### Advanced usage
 
