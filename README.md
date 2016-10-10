@@ -48,8 +48,15 @@ The reason for the partial function is the ability for reuse. For example, if yo
 ```javascript
 import axios from 'axios';
 
-const savePdfFile = savery('my-consistently-named-pdf.pdf');
+// save the consistent implementation
+const pdfFileSavery = savery('my-consistently-named-pdf.pdf');
 
+// create a function that accepts the data and calls the .save()
+const savePdfFile = (data) => {
+  pdfFileSavery(data).save();
+};
+
+// in your API call, you can pass it as a simple method
 const getPdf = () => {
   axios({
     method: 'get',
