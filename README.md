@@ -41,6 +41,9 @@ const file = saveCssFile('.foo { display: block; }');
 
 // or you could do it in one line
 const file = savery('foo.css', SAVERY_OPTIONS)('.foo { display: block; }');
+
+file.save(); // to execute the creation of the file from the data
+file.abort(); // if you want to abort the request to create the file
 ```
 
 The reason for the partial function is the ability for reuse. For example, if you know the file type and want a consistent filename from a remote download:
