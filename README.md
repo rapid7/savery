@@ -45,7 +45,7 @@ file.abort(); // if you want to abort the request to create the file
 
 // all save executions are chainable
 savery.save('.foo { display: block; }', 'foo.css')
-    ,then((saveryInstance) => {
+    .then((saveryInstance) => {
         console.log('I am complete! Here is the instance to prove it: ', saveryInstance);
     })
     .catch((saveryInstance) => {
@@ -55,7 +55,7 @@ savery.save('.foo { display: block; }', 'foo.css')
     });
 ```
 
-As you can see, you can either call `savery.save` to immediately fire the save process, or you can create a partial function which accepts `filename` and `saveryOptions` but not the data. The reason for the partial function is the ability for reuse. For example, if you know the file type and want a consistent filename from a remote download:
+As you can see, you can either call `savery.save` to immediately fire the save process, or you can create a partial function which accepts `filename` and `saveryOptions` but returns a function that accepts the `data`. The reason for the partial function is the ability for reuse. For example, if you know the file type and want a consistent filename from a remote download:
 
 ```javascript
 import axios from 'axios';
