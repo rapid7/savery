@@ -162,6 +162,10 @@ This will abort the instance execution immediately. This fires two methods in th
 * `onAbort` (immediately upon aborting)
 * `onError` (once aborted, internally it fires the `onError` so that the `.catch()` in the chain is also called)
 
+**savery.save(data: any, filename: string = 'download.txt', saveryOptions: Object = {}): Promise**
+
+This will immediate trigger the save process with the `data`, `filename`, and `saveryOptions` passed, and will return the same `Promise` that calling `save()` on a `saveryInstance` will.
+
 ### Advanced usage
 
 `savery` uses a list of commonly-used MIME types which is intended to be comprehensive enough for most common use cases, however if you want to include the complete list of MIME types in your package you can do either of the following:
