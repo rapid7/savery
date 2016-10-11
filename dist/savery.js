@@ -93,17 +93,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @param {function} [options.onAbort]
 	 * @param {function} [options.onAfterSave]
 	 * @param {function} [options.onBeforeSave]
+	 * @param {function} [options.onEndSave]
 	 * @param {function} [options.onError]
-	 * @param {function} [options.onProgress]
-	 * @param {function} [options.onWrite]
-	 * @param {function} [options.onWriteStart]
+	 * @param {function} [options.onStartSave]
+	 * @param {boolean} [options.shouldAutoBom]
 	 * @param {string} [options.type]
 	 * @returns {function(data: *): void}
 	 */
 	
 	
 	// types
-	var saveFile = function saveFile() {
+	var savery = function savery() {
 	  var fileName = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'download.txt';
 	  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 	  var type = options.type;
@@ -121,7 +121,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	};
 	
-	exports.default = saveFile;
+	/**
+	 * one-line function to create the savery on the spot and fire the .save()
+	 *
+	 * @param {*} data
+	 * @param {string} fileName
+	 * @param {object} options
+	 * @param {function} [options.onAbort]
+	 * @param {function} [options.onAfterSave]
+	 * @param {function} [options.onBeforeSave]
+	 * @param {function} [options.onEndSave]
+	 * @param {function} [options.onError]
+	 * @param {function} [options.onStartSave]
+	 * @param {boolean} [options.shouldAutoBom]
+	 * @param {string} [options.type]
+	 * @returns {Promise}
+	 */
+	savery.save = function (data, fileName, options) {
+	  var saveryInstance = savery(fileName, options);
+	
+	  return saveryInstance(data).save();
+	};
+	
+	exports.default = savery;
 	module.exports = exports['default'];
 
 /***/ },
@@ -188,6 +210,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return _this.onBeforeSave(_this.data);
 	    };
 	
+	    this._onCreateFile = function () {
+	      if (_this.status !== _constants.STATUSES.PROCESSING) {
+	        return Promise.reject(_this);
+	      }
+	
+	      var blob = (0, _utils.createBlob)(_this.data, _this.mimeType);
+	      var file = _this.autoBOM ? (0, _utils.setAutoBom)(blob) : blob;
+	      var objectUrl = (0, _utils.createObjectUrl)(file);
+	
+	      _this.size = blob.size;
+	
+	      return {
+	        file: file,
+	        objectUrl: objectUrl
+	      };
+	    };
+	
 	    this._onEndSave = function (objectUrl) {
 	      if (_this.status !== _constants.STATUSES.PROCESSING) {
 	        return Promise.reject(_this);
@@ -211,16 +250,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return Promise.reject(error);
 	    };
 	
-	    this._onSave = function () {
+	    this._onSave = function (fileObject) {
 	      if (_this.status !== _constants.STATUSES.PROCESSING) {
 	        return Promise.reject(_this);
 	      }
 	
-	      var blob = (0, _utils.createBlob)(_this.data, _this.mimeType);
-	      var file = _this.autoBOM ? (0, _utils.setAutoBom)(blob) : blob;
-	      var objectUrl = (0, _utils.createObjectUrl)(file);
+	      var file = fileObject.file;
+	      var objectUrl = fileObject.objectUrl;
 	
-	      _this.size = blob.size;
 	
 	      if (_constants.HAS_DOWNLOAD_ATTRIBUTE_SUPPORT) {
 	        (0, _utils.saveWithDownloadAttribute)(objectUrl, _this.filename);
@@ -305,6 +342,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	
 	  /**
+	   * create the file and associated objectUrl
+	   *
+	   * @returns {{file: Blob, objectUrl: string}}
+	   * @private
+	   */
+	
+	
+	  /**
 	   * trigger the end of the save process
 	   *
 	   * @param {string} objectUrl
@@ -325,6 +370,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  /**
 	   * save the file based on browser capabilities
 	   *
+	   * @param {object} fileObject
+	   * @param {Blob} fileObject.file
+	   * @param {string} fileObject.objectUrl
 	   * @returns {string|Promise}
 	   * @private
 	   */
@@ -371,7 +419,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'save',
 	    value: function save() {
-	      return Promise.resolve().then(this._onBeforeSave).then(this._onStartSave).then(this._onSave).then(this._onEndSave).then(this._onAfterSave).catch(this._onError);
+	      return Promise.resolve().then(this._onBeforeSave).then(this._onStartSave).then(this._onCreateFile).then(this._onSave).then(this._onEndSave).then(this._onAfterSave).catch(this._onError);
 	    }
 	  }]);
 	

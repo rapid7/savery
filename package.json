@@ -1,6 +1,7 @@
 {
   "author": "planttheidea",
   "ava": {
+    "concurrency": 5,
     "failFast": true,
     "files": [
       "./test/*.js"
@@ -9,7 +10,8 @@
       "babel-register",
       "babel-polyfill",
       "./test/helpers/setup-browser-env.js"
-    ]
+    ],
+    "verbose": true
   },
   "babel": {
     "plugins": [
@@ -96,9 +98,9 @@
     "flow": "flow status src",
     "lint": "NODE_ENV=test eslint src",
     "prepublish": "in-publish && npm run compile-for-publish || in-install",
-    "test": "NODE_ENV=test ava --no-cache --verbose",
-    "test:watch": "NODE_ENV=test ava --no-cache --verbose --watch",
+    "test": "NODE_ENV=test ava --no-cache",
+    "test:watch": "NODE_ENV=test ava --watch",
     "transpile": "NODE_ENV=production ./node_modules/babel-cli/lib/babel/index.js -d lib/ src/"
   },
-  "version": "1.0.4"
+  "version": "1.1.0"
 }

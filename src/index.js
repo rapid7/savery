@@ -22,14 +22,14 @@ import type {
  * @param {function} [options.onAbort]
  * @param {function} [options.onAfterSave]
  * @param {function} [options.onBeforeSave]
+ * @param {function} [options.onEndSave]
  * @param {function} [options.onError]
- * @param {function} [options.onProgress]
- * @param {function} [options.onWrite]
- * @param {function} [options.onWriteStart]
+ * @param {function} [options.onStartSave]
+ * @param {boolean} [options.shouldAutoBom]
  * @param {string} [options.type]
  * @returns {function(data: *): void}
  */
-const saveFile = (fileName: string = 'download.txt', options: Options = {}): Function => {
+const savery = (fileName: string = 'download.txt', options: Options = {}): Function => {
   const {
     type,
     ...restOfOptions
@@ -44,4 +44,26 @@ const saveFile = (fileName: string = 'download.txt', options: Options = {}): Fun
   };
 };
 
-export default saveFile;
+/**
+ * one-line function to create the savery on the spot and fire the .save()
+ *
+ * @param {*} data
+ * @param {string} fileName
+ * @param {object} options
+ * @param {function} [options.onAbort]
+ * @param {function} [options.onAfterSave]
+ * @param {function} [options.onBeforeSave]
+ * @param {function} [options.onEndSave]
+ * @param {function} [options.onError]
+ * @param {function} [options.onStartSave]
+ * @param {boolean} [options.shouldAutoBom]
+ * @param {string} [options.type]
+ * @returns {Promise}
+ */
+savery.save = (data: any, fileName: string, options: Options): Promise<SaveryType> => {
+  const saveryInstance: SaveryType = savery(fileName, options);
+
+  return saveryInstance(data).save();
+};
+
+export default savery;
