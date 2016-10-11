@@ -11,6 +11,7 @@ import {
 const EXPECTED_SAVERY_KEYS = [
   '_onAfterSave',
   '_onBeforeSave',
+  '_onCreateFile',
   '_onEndSave',
   '_onError',
   '_onSave',

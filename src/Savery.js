@@ -103,6 +103,29 @@ class Savery {
   };
 
   /**
+   * create the file and associated objectUrl
+   *
+   * @returns {{file: Blob, objectUrl: string}}
+   * @private
+   */
+  _onCreateFile = () => {
+    if (this.status !== STATUSES.PROCESSING) {
+      return Promise.reject(this);
+    }
+
+    const blob: Blob = createBlob(this.data, this.mimeType);
+    const file: Blob = this.autoBOM ? setAutoBom(blob) : blob;
+    const objectUrl: string = createObjectUrl(file);
+
+    this.size = blob.size;
+
+    return {
+      file,
+      objectUrl
+    };
+  };
+
+  /**
    * trigger the end of the save process
    *
    * @param {string} objectUrl
@@ -142,19 +165,21 @@ class Savery {
   /**
    * save the file based on browser capabilities
    *
+   * @param {object} fileObject
+   * @param {Blob} fileObject.file
+   * @param {string} fileObject.objectUrl
    * @returns {string|Promise}
    * @private
    */
-  _onSave = () => {
+  _onSave = (fileObject: Object) => {
     if (this.status !== STATUSES.PROCESSING) {
       return Promise.reject(this);
     }
 
-    const blob: Blob = createBlob(this.data, this.mimeType);
-    const file: Blob = this.autoBOM ? setAutoBom(blob) : blob;
-    const objectUrl: string = createObjectUrl(file);
-
-    this.size = blob.size;
+    const {
+      file,
+      objectUrl
+    } = fileObject;
 
     if (HAS_DOWNLOAD_ATTRIBUTE_SUPPORT) {
       saveWithDownloadAttribute(objectUrl, this.filename);
@@ -223,6 +248,7 @@ class Savery {
     return Promise.resolve()
       .then(this._onBeforeSave)
       .then(this._onStartSave)
+      .then(this._onCreateFile)
       .then(this._onSave)
       .then(this._onEndSave)
       .then(this._onAfterSave)
