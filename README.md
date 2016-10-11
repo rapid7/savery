@@ -27,36 +27,48 @@ const savery = require('savery');
 // script
 const savery = window.savery;
 
-// create the function that will save the data
-const SAVERY_OPTIONS = {
-  onBeforeSave() {
-    console.log('Starting!');
-  }  
-};
+// save the file immediately with a single line
+savery.save('.foo { display: block; }', 'foo.css');
 
-const saveCssFile = savery('foo.css', SAVERY_OPTIONS);
+// or create use the partial applcation function option with name and options
+const saveCssFile = savery('foo.css', {
+    onBeforeSave() {
+      console.log('Starting!');
+    }  
+});
 
-// then pass it the data
+// and then pass it the data
 const file = saveCssFile('.foo { display: block; }');
-
-// or you could do it in one line
-const file = savery('foo.css', SAVERY_OPTIONS)('.foo { display: block; }');
 
 file.save(); // to execute the creation of the file from the data
 file.abort(); // if you want to abort the request to create the file
+
+// all save executions are chainable
+savery.save('.foo { display: block; }', 'foo.css')
+    ,then((saveryInstance) => {
+        console.log('I am complete! Here is the instance to prove it: ', saveryInstance);
+    })
+    .catch((saveryInstance) => {
+        console.log('Oops, something went wrong. :(');
+        
+        throw saveryInstance.error;
+    });
 ```
 
-The reason for the partial function is the ability for reuse. For example, if you know the file type and want a consistent filename from a remote download:
+As you can see, you can either call `savery.save` to immediately fire the save process, or you can create a partial function which accepts `filename` and `saveryOptions` but not the data. The reason for the partial function is the ability for reuse. For example, if you know the file type and want a consistent filename from a remote download:
 
 ```javascript
 import axios from 'axios';
+import savery from 'savery';
+
+const PDF_NAME = 'my-consistently-named.pdf';
 
 // save the consistent implementation
-const pdfFileSavery = savery('my-consistently-named-pdf.pdf');
+const pdfFileSavery = savery(PDF_NAME);
 
 // create a function that accepts the data and calls the .save()
 const savePdfFile = (data) => {
-  pdfFileSavery(data).save();
+  return pdfFileSavery(data).save();
 };
 
 // in your API call, you can pass it as a simple method
@@ -70,7 +82,33 @@ const getPdf = () => {
 };
 ```
 
-This is an example using AJAX calls, however the same reusability is possible in all applications of `savery`.
+Or if you needed to support a dynamic filename, it could still be a simple one-liner:
+
+```javascript
+import axios from 'axios';
+import savery from 'savery';
+
+// create a function that accepts the data and calls the .save()
+const savePdfFile = (name, options = {}) => {
+  const saveryInstance = savery(name, options);
+  
+  return (data) => {
+    return saveryInstance(data).save();
+  };
+};
+
+// in your API call, you can pass it as a simple method
+const getPdf = (dynamicFilename) => {
+  axios({
+    method: 'get',
+    responseType: 'arraybuffer',
+    uri: '/location/of/pdf'
+  })
+    .then(savePdfFile(dynamicFileName));
+};
+```
+
+With the partial applcation function usage, you have control over the execution while still maximizing code reuse and readability.
 
 ### Methods
 

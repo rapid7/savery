@@ -93,17 +93,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @param {function} [options.onAbort]
 	 * @param {function} [options.onAfterSave]
 	 * @param {function} [options.onBeforeSave]
+	 * @param {function} [options.onEndSave]
 	 * @param {function} [options.onError]
-	 * @param {function} [options.onProgress]
-	 * @param {function} [options.onWrite]
-	 * @param {function} [options.onWriteStart]
+	 * @param {function} [options.onStartSave]
+	 * @param {boolean} [options.shouldAutoBom]
 	 * @param {string} [options.type]
 	 * @returns {function(data: *): void}
 	 */
 	
 	
 	// types
-	var saveFile = function saveFile() {
+	var savery = function savery() {
 	  var fileName = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'download.txt';
 	  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 	  var type = options.type;
@@ -121,7 +121,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	};
 	
-	exports.default = saveFile;
+	/**
+	 * one-line function to create the savery on the spot and fire the .save()
+	 *
+	 * @param {*} data
+	 * @param {string} fileName
+	 * @param {object} options
+	 * @param {function} [options.onAbort]
+	 * @param {function} [options.onAfterSave]
+	 * @param {function} [options.onBeforeSave]
+	 * @param {function} [options.onEndSave]
+	 * @param {function} [options.onError]
+	 * @param {function} [options.onStartSave]
+	 * @param {boolean} [options.shouldAutoBom]
+	 * @param {string} [options.type]
+	 * @returns {Promise}
+	 */
+	savery.save = function (data, fileName, options) {
+	  var saveryInstance = savery(fileName, options);
+	
+	  return saveryInstance(data).save();
+	};
+	
+	exports.default = savery;
 	module.exports = exports['default'];
 
 /***/ },

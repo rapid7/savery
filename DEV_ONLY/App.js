@@ -29,18 +29,33 @@ const onBeforeSave = (blob) => {
   });
 };
 
+const data = `.foo {display: flex;}`;
+const fileName = 'test.css';
 const options = {
   // onAfterSave,
   // onBeforeSave
 };
 
-const saveCssFile = savery('test.css', options);
+// const saveCssFile = savery(fileName, options);
+//
+// const file = saveCssFile(data);
+//
+// file.save()
+//   .then((saveryInstance) => {
+//     console.log(saveryInstance);
+//   })
+//   .catch((saveryInstance) => {
+//     console.log(saveryInstance);
+//
+//     throw saveryInstance.error;
+//   });
+//
+// Uncomment line to fire the abort
+// file.abort();
 
-const data = `.foo {display: flex;}`;
+const file = savery.save(data, fileName, options);
 
-const file = saveCssFile(data);
-
-file.save()
+file
   .then((saveryInstance) => {
     console.log(saveryInstance);
   })
@@ -49,9 +64,6 @@ file.save()
 
     throw saveryInstance.error;
   });
-
-// Uncomment line to fire the abort
-// file.abort();
 
 class App extends Component {
   render() {
