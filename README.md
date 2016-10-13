@@ -189,7 +189,7 @@ This will tell `savery` to use the [mime-types](https://github.com/jshttp/mime-t
   * Firefox <20
   * Safari
   * Opera <15
-* Requires [Blob.js](https://github.com/eligrey/Blob.js) dependency
+* Requires [Blob polyfill](https://www.npmjs.com/package/blob-polyfill)
   * Firefox <20
   * Opera <15
   * Safari <6

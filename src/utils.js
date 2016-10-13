@@ -15,6 +15,9 @@ import {
 // conditional dependencies
 const mime = process.env.SAVERY === 'full' ? require('mime-types') : require('./mime');
 
+const CONFIRMATION_MESSAGE: string = 'Displaying new document\n\n Use Save As... to download, ' +
+  'then click back in your browser to return to this page.';
+
 /**
  * generate a new blob based on the data and MIME type
  *
@@ -23,7 +26,7 @@ const mime = process.env.SAVERY === 'full' ? require('mime-types') : require('./
  * @returns {Blob}
  */
 const createBlob = (data: any, mimeType: string): Blob => {
-  return new window.Blob([data], {
+  return new GLOBAL.Blob([data], {
     type: mimeType
   });
 };
@@ -31,7 +34,7 @@ const createBlob = (data: any, mimeType: string): Blob => {
 export {createBlob};
 
 /**
- * create the objectUrl with the window URL object
+ * create the objectUrl with the GLOBAL URL object
  *
  * @param {Blob} blob
  * @returns {string}
@@ -99,7 +102,9 @@ const openPopupOrNavigate = (url: string) => {
   const popup: Object = GLOBAL.open(url, '_blank');
 
   if (!popup) {
-    GLOBAL.location.href = url;
+    if (confirm(CONFIRMATION_MESSAGE)) {
+      GLOBAL.location.href = url;
+    }
   }
 };
 
@@ -174,7 +179,7 @@ const saveWithFileReader = (blob: Blob): Promise<string> => {
   }
 
   return new Promise((resolve: Function) => {
-    const reader: FileReader = new window.FileReader();
+    const reader: FileReader = new GLOBAL.FileReader();
 
     reader.onloadend = function() {
       const url = IS_CHROME_OR_IOS ? reader.result : reader.result.replace(READER_REPLACE_REGEXP, 'data:attachment/file;');
@@ -191,6 +196,18 @@ const saveWithFileReader = (blob: Blob): Promise<string> => {
 export {saveWithFileReader};
 
 /**
+ * for IE10 (which has Blob but no URL support) use the native msSaveBlob
+ *
+ * @param {Blob} blob
+ * @param {string} filename
+ */
+const saveWithSaveMsBlob = (blob: Blob, filename: string) => {
+  GLOBAL.navigator.msSaveBlob(blob, filename);
+};
+
+export {saveWithSaveMsBlob};
+
+/**
  * set the BOM for the blob
  *
  * @param {Blob} blob
@@ -201,7 +218,7 @@ const setAutoBom = (blob: Blob): Blob => {
   // prepend BOM for UTF-8 XML and text/* types (including HTML)
   // note: your browser will automatically convert UTF-16 U+FEFF to EF BB BF
   if (AUTO_BOM_REGEXP.test(blob.type)) {
-    return new window.Blob([String.fromCharCode(0xFEFF), blob], {
+    return new GLOBAL.Blob([String.fromCharCode(0xFEFF), blob], {
       type: blob.type
     });
   }
