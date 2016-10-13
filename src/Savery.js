@@ -5,6 +5,7 @@ import {
   DEFAULT_MIME_TYPE,
   GLOBAL,
   HAS_DOWNLOAD_ATTRIBUTE_SUPPORT,
+  HAS_MSSAVEBLOB_SUPPORT,
   IS_CHROME_OR_IOS,
   IS_SAFARI,
   STATUSES
@@ -20,6 +21,7 @@ import {
   revokeObjectUrl,
   saveWithDownloadAttribute,
   saveWithFileReader,
+  saveWithSaveMsBlob,
   setAutoBom
 } from './utils';
 
@@ -180,6 +182,12 @@ class Savery {
       file,
       objectUrl
     } = fileObject;
+
+    if (HAS_MSSAVEBLOB_SUPPORT) {
+      saveWithSaveMsBlob(file, this.filename);
+
+      return objectUrl;
+    }
 
     if (HAS_DOWNLOAD_ATTRIBUTE_SUPPORT) {
       saveWithDownloadAttribute(objectUrl, this.filename);

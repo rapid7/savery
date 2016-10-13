@@ -69,15 +69,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 	
-	var _Savery = __webpack_require__(2);
+	__webpack_require__(2);
+	
+	var _Savery = __webpack_require__(3);
 	
 	var _Savery2 = _interopRequireDefault(_Savery);
 	
-	var _utils = __webpack_require__(4);
+	var _utils = __webpack_require__(5);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+	
+	// polyfills
+	
 	
 	// main class
 	
@@ -148,6 +153,223 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 2 */
+/***/ function(module, exports) {
+
+	/* Blob.js
+	 * A Blob implementation.
+	 * 2014-07-24
+	 *
+	 * By Eli Grey, http://eligrey.com
+	 * By Devin Samarin, https://github.com/dsamarin
+	 * License: X11/MIT
+	 *   See https://github.com/eligrey/Blob.js/blob/master/LICENSE.md
+	 */
+	
+	/*global self, unescape */
+	/*jslint bitwise: true, regexp: true, confusion: true, es5: true, vars: true, white: true,
+	  plusplus: true */
+	
+	/*! @source http://purl.eligrey.com/github/Blob.js/blob/master/Blob.js */
+	
+	(function (view) {
+		"use strict";
+	
+		view.URL = view.URL || view.webkitURL;
+	
+		if (view.Blob && view.URL) {
+			try {
+				new Blob;
+				return;
+			} catch (e) {}
+		}
+	
+		// Internally we use a BlobBuilder implementation to base Blob off of
+		// in order to support older browsers that only have BlobBuilder
+		var BlobBuilder = view.BlobBuilder || view.WebKitBlobBuilder || view.MozBlobBuilder || (function(view) {
+			var
+				  get_class = function(object) {
+					return Object.prototype.toString.call(object).match(/^\[object\s(.*)\]$/)[1];
+				}
+				, FakeBlobBuilder = function BlobBuilder() {
+					this.data = [];
+				}
+				, FakeBlob = function Blob(data, type, encoding) {
+					this.data = data;
+					this.size = data.length;
+					this.type = type;
+					this.encoding = encoding;
+				}
+				, FBB_proto = FakeBlobBuilder.prototype
+				, FB_proto = FakeBlob.prototype
+				, FileReaderSync = view.FileReaderSync
+				, FileException = function(type) {
+					this.code = this[this.name = type];
+				}
+				, file_ex_codes = (
+					  "NOT_FOUND_ERR SECURITY_ERR ABORT_ERR NOT_READABLE_ERR ENCODING_ERR "
+					+ "NO_MODIFICATION_ALLOWED_ERR INVALID_STATE_ERR SYNTAX_ERR"
+				).split(" ")
+				, file_ex_code = file_ex_codes.length
+				, real_URL = view.URL || view.webkitURL || view
+				, real_create_object_URL = real_URL.createObjectURL
+				, real_revoke_object_URL = real_URL.revokeObjectURL
+				, URL = real_URL
+				, btoa = view.btoa
+				, atob = view.atob
+	
+				, ArrayBuffer = view.ArrayBuffer
+				, Uint8Array = view.Uint8Array
+	
+				, origin = /^[\w-]+:\/*\[?[\w\.:-]+\]?(?::[0-9]+)?/
+			;
+			FakeBlob.fake = FB_proto.fake = true;
+			while (file_ex_code--) {
+				FileException.prototype[file_ex_codes[file_ex_code]] = file_ex_code + 1;
+			}
+			// Polyfill URL
+			if (!real_URL.createObjectURL) {
+				URL = view.URL = function(uri) {
+					var
+						  uri_info = document.createElementNS("http://www.w3.org/1999/xhtml", "a")
+						, uri_origin
+					;
+					uri_info.href = uri;
+					if (!("origin" in uri_info)) {
+						if (uri_info.protocol.toLowerCase() === "data:") {
+							uri_info.origin = null;
+						} else {
+							uri_origin = uri.match(origin);
+							uri_info.origin = uri_origin && uri_origin[1];
+						}
+					}
+					return uri_info;
+				};
+			}
+			URL.createObjectURL = function(blob) {
+				var
+					  type = blob.type
+					, data_URI_header
+				;
+				if (type === null) {
+					type = "application/octet-stream";
+				}
+				if (blob instanceof FakeBlob) {
+					data_URI_header = "data:" + type;
+					if (blob.encoding === "base64") {
+						return data_URI_header + ";base64," + blob.data;
+					} else if (blob.encoding === "URI") {
+						return data_URI_header + "," + decodeURIComponent(blob.data);
+					} if (btoa) {
+						return data_URI_header + ";base64," + btoa(blob.data);
+					} else {
+						return data_URI_header + "," + encodeURIComponent(blob.data);
+					}
+				} else if (real_create_object_URL) {
+					return real_create_object_URL.call(real_URL, blob);
+				}
+			};
+			URL.revokeObjectURL = function(object_URL) {
+				if (object_URL.substring(0, 5) !== "data:" && real_revoke_object_URL) {
+					real_revoke_object_URL.call(real_URL, object_URL);
+				}
+			};
+			FBB_proto.append = function(data/*, endings*/) {
+				var bb = this.data;
+				// decode data to a binary string
+				if (Uint8Array && (data instanceof ArrayBuffer || data instanceof Uint8Array)) {
+					var
+						  str = ""
+						, buf = new Uint8Array(data)
+						, i = 0
+						, buf_len = buf.length
+					;
+					for (; i < buf_len; i++) {
+						str += String.fromCharCode(buf[i]);
+					}
+					bb.push(str);
+				} else if (get_class(data) === "Blob" || get_class(data) === "File") {
+					if (FileReaderSync) {
+						var fr = new FileReaderSync;
+						bb.push(fr.readAsBinaryString(data));
+					} else {
+						// async FileReader won't work as BlobBuilder is sync
+						throw new FileException("NOT_READABLE_ERR");
+					}
+				} else if (data instanceof FakeBlob) {
+					if (data.encoding === "base64" && atob) {
+						bb.push(atob(data.data));
+					} else if (data.encoding === "URI") {
+						bb.push(decodeURIComponent(data.data));
+					} else if (data.encoding === "raw") {
+						bb.push(data.data);
+					}
+				} else {
+					if (typeof data !== "string") {
+						data += ""; // convert unsupported types to strings
+					}
+					// decode UTF-16 to binary string
+					bb.push(unescape(encodeURIComponent(data)));
+				}
+			};
+			FBB_proto.getBlob = function(type) {
+				if (!arguments.length) {
+					type = null;
+				}
+				return new FakeBlob(this.data.join(""), type, "raw");
+			};
+			FBB_proto.toString = function() {
+				return "[object BlobBuilder]";
+			};
+			FB_proto.slice = function(start, end, type) {
+				var args = arguments.length;
+				if (args < 3) {
+					type = null;
+				}
+				return new FakeBlob(
+					  this.data.slice(start, args > 1 ? end : this.data.length)
+					, type
+					, this.encoding
+				);
+			};
+			FB_proto.toString = function() {
+				return "[object Blob]";
+			};
+			FB_proto.close = function() {
+				this.size = 0;
+				delete this.data;
+			};
+			return FakeBlobBuilder;
+		}(view));
+	
+		view.Blob = function(blobParts, options) {
+			var type = options ? (options.type || "") : "";
+			var builder = new BlobBuilder();
+			if (blobParts) {
+				for (var i = 0, len = blobParts.length; i < len; i++) {
+					if (Uint8Array && blobParts[i] instanceof Uint8Array) {
+						builder.append(blobParts[i].buffer);
+					}
+					else {
+						builder.append(blobParts[i]);
+					}
+				}
+			}
+			var blob = builder.getBlob(type);
+			if (!blob.slice && blob.webkitSlice) {
+				blob.slice = blob.webkitSlice;
+			}
+			return blob;
+		};
+	
+		var getPrototypeOf = Object.getPrototypeOf || function(object) {
+			return object.__proto__;
+		};
+		view.Blob.prototype = getPrototypeOf(new view.Blob());
+	}(typeof self !== "undefined" && self || typeof window !== "undefined" && window || this.content || this));
+
+
+/***/ },
+/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -164,9 +386,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	// utils
 	
 	
-	var _constants = __webpack_require__(3);
+	var _constants = __webpack_require__(4);
 	
-	var _utils = __webpack_require__(4);
+	var _utils = __webpack_require__(5);
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
@@ -258,6 +480,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var file = fileObject.file;
 	      var objectUrl = fileObject.objectUrl;
 	
+	
+	      if (_constants.HAS_MSSAVEBLOB_SUPPORT) {
+	        (0, _utils.saveWithSaveMsBlob)(file, _this.filename);
+	
+	        return objectUrl;
+	      }
 	
 	      if (_constants.HAS_DOWNLOAD_ATTRIBUTE_SUPPORT) {
 	        (0, _utils.saveWithDownloadAttribute)(objectUrl, _this.filename);
@@ -430,7 +658,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports['default'];
 
 /***/ },
-/* 3 */
+/* 4 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
@@ -464,6 +692,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var SAFARI_REGEXP = /constructor/i;
 	
 	var HAS_DOWNLOAD_ATTRIBUTE_SUPPORT = 'download' in LINK;
+	var HAS_MSSAVEBLOB_SUPPORT = !!(GLOBAL.navigator && GLOBAL.navigator.msSaveBlob);
 	var IS_CHROME_OR_IOS = CHROME_OR_IOS_REGEXP.test(GLOBAL.navigator.userAgent);
 	var IS_SAFARI = SAFARI_REGEXP.test(GLOBAL.HTMLElement) || GLOBAL.safari;
 	
@@ -474,6 +703,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.DEFAULT_MIME_TYPE = DEFAULT_MIME_TYPE;
 	exports.GLOBAL = GLOBAL;
 	exports.HAS_DOWNLOAD_ATTRIBUTE_SUPPORT = HAS_DOWNLOAD_ATTRIBUTE_SUPPORT;
+	exports.HAS_MSSAVEBLOB_SUPPORT = HAS_MSSAVEBLOB_SUPPORT;
 	exports.IS_CHROME_OR_IOS = IS_CHROME_OR_IOS;
 	exports.IS_SAFARI = IS_SAFARI;
 	exports.LINK = LINK;
@@ -486,7 +716,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -494,12 +724,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.setAutoBom = exports.saveWithFileReader = exports.saveWithDownloadAttribute = exports.triggerClick = exports.revokeObjectUrl = exports.passThrough = exports.openPopupOrNavigate = exports.noop = exports.getMimeType = exports.createObjectUrl = exports.createBlob = undefined;
+	exports.setAutoBom = exports.saveWithSaveMsBlob = exports.saveWithFileReader = exports.saveWithDownloadAttribute = exports.triggerClick = exports.revokeObjectUrl = exports.passThrough = exports.openPopupOrNavigate = exports.noop = exports.getMimeType = exports.createObjectUrl = exports.createBlob = undefined;
 	
-	var _constants = __webpack_require__(3);
+	var _constants = __webpack_require__(4);
 	
 	// conditional dependencies
-	var mime =  false ? require('mime-types') : __webpack_require__(5);
+	var mime =  false ? require('mime-types') : __webpack_require__(6);
+	
+	// constants
+	
+	
+	var CONFIRMATION_MESSAGE = 'Displaying new document\n\n Use Save As... to download, ' + 'then click back in your browser to return to this page.';
 	
 	/**
 	 * generate a new blob based on the data and MIME type
@@ -508,11 +743,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @param {string} mimeType
 	 * @returns {Blob}
 	 */
-	
-	
-	// constants
 	var createBlob = function createBlob(data, mimeType) {
-	  return new window.Blob([data], {
+	  return new _constants.GLOBAL.Blob([data], {
 	    type: mimeType
 	  });
 	};
@@ -520,7 +752,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.createBlob = createBlob;
 	
 	/**
-	 * create the objectUrl with the window URL object
+	 * create the objectUrl with the GLOBAL URL object
 	 *
 	 * @param {Blob} blob
 	 * @returns {string}
@@ -592,7 +824,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var popup = _constants.GLOBAL.open(url, '_blank');
 	
 	  if (!popup) {
-	    _constants.GLOBAL.location.href = url;
+	    if (confirm(CONFIRMATION_MESSAGE)) {
+	      _constants.GLOBAL.location.href = url;
+	    }
 	  }
 	};
 	
@@ -672,7 +906,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	
 	  return new Promise(function (resolve) {
-	    var reader = new window.FileReader();
+	    var reader = new _constants.GLOBAL.FileReader();
 	
 	    reader.onloadend = function () {
 	      var url = _constants.IS_CHROME_OR_IOS ? reader.result : reader.result.replace(_constants.READER_REPLACE_REGEXP, 'data:attachment/file;');
@@ -689,6 +923,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.saveWithFileReader = saveWithFileReader;
 	
 	/**
+	 * for IE10 (which has Blob but no URL support) use the native msSaveBlob
+	 *
+	 * @param {Blob} blob
+	 * @param {string} filename
+	 */
+	
+	var saveWithSaveMsBlob = function saveWithSaveMsBlob(blob, filename) {
+	  _constants.GLOBAL.navigator.msSaveBlob(blob, filename);
+	};
+	
+	exports.saveWithSaveMsBlob = saveWithSaveMsBlob;
+	
+	/**
 	 * set the BOM for the blob
 	 *
 	 * @param {Blob} blob
@@ -700,7 +947,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  // prepend BOM for UTF-8 XML and text/* types (including HTML)
 	  // note: your browser will automatically convert UTF-16 U+FEFF to EF BB BF
 	  if (_constants.AUTO_BOM_REGEXP.test(blob.type)) {
-	    return new window.Blob([String.fromCharCode(0xFEFF), blob], {
+	    return new _constants.GLOBAL.Blob([String.fromCharCode(0xFEFF), blob], {
 	      type: blob.type
 	    });
 	  }
@@ -711,7 +958,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.setAutoBom = setAutoBom;
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports) {
 
 	'use strict';

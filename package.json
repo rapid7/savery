@@ -52,9 +52,9 @@
     "babel-register": "6.16.3",
     "enzyme": "2.4.1",
     "eslint": "3.7.1",
+    "eslint-config-rapid7": "^2.0.0-7",
     "eslint-friendly-formatter": "2.0.6",
     "eslint-loader": "1.5.0",
-    "eslint-plugin-import": "2.0.0",
     "flow-babel-webpack-plugin": "^1.0.1",
     "flow-bin": "^0.33.0",
     "html-webpack-plugin": "2.22.0",
@@ -102,5 +102,5 @@
     "test:watch": "NODE_ENV=test ava --watch",
     "transpile": "NODE_ENV=production ./node_modules/babel-cli/lib/babel/index.js -d lib/ src/"
   },
-  "version": "1.1.0"
+  "version": "1.2.0"
 }

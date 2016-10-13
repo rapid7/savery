@@ -5,6 +5,7 @@
     "es6": true,
     "jquery": true
   },
+  "extends": "rapid7",
   "globals":{
     "global": true,
     "process": true
@@ -35,126 +36,5 @@
   "plugins": [
     "import"
   ],
-  "rules":{
-    "array-bracket-spacing": [2, "never"],
-    "arrow-body-style": [2, "always"],
-    "arrow-parens": [2, "always"],
-    "arrow-spacing": [2, {
-      "after": true,
-      "before": true
-    }],
-    "block-spacing": [2, "never"],
-    "brace-style": [2, "1tbs", {
-      "allowSingleLine": true
-    }],
-    "comma-dangle": 2,
-    "comma-spacing": [2, {
-      "after": true,
-      "before": false
-    }],
-    "comma-style": [2, "last"],
-    "computed-property-spacing": [2, "never"],
-    "constructor-super": 2,
-    "curly": 2,
-    "eol-last": 2,
-    "eqeqeq": 2,
-    "func-call-spacing": [2, "never"],
-    "generator-star-spacing": [2, {
-      "after": true,
-      "before": false
-    }],
-    "key-spacing": [2, {
-      "afterColon": true,
-      "beforeColon": false
-    }],
-    "keyword-spacing": [2, {
-      "after": true
-    }],
-    "jsx-quotes": [2, "prefer-double"],
-    "newline-after-var": 2,
-    "newline-before-return": 2,
-    "no-array-constructor": 2,
-    "no-caller": 1,
-    "no-class-assign": 2,
-    "no-console": 1,
-    "no-const-assign": 2,
-    "no-debugger": 2,
-    "no-delete-var": 2,
-    "no-dupe-args": 2,
-    "no-dupe-class-members": 2,
-    "no-dupe-keys": 2,
-    "no-duplicate-case": 2,
-    "no-empty": 2,
-    "no-empty-pattern": 2,
-    "no-eval": 2,
-    "no-extra-semi": 2,
-    "no-floating-decimal": 2,
-    "no-implied-eval": 2,
-    "no-invalid-regexp": 2,
-    "no-multi-spaces": 2,
-    "no-multiple-empty-lines": 2,
-    "no-native-reassign": 2,
-    "no-new-func": 2,
-    "no-new-object": 2,
-    "no-new-symbol": 2,
-    "no-obj-calls": 2,
-    "no-octal": 2,
-    "no-proto": 2,
-    "no-regex-spaces": 2,
-    "no-self-assign": 2,
-    "no-this-before-super": 2,
-    "no-undef": 2,
-    "no-unexpected-multiline": 1,
-    "no-unreachable": 2,
-    "no-unsafe-negation": 2,
-    "no-use-before-define": 2,
-    "no-useless-call": 2,
-    "no-useless-computed-key": 2,
-    "no-useless-concat": 2,
-    "no-useless-rename": 2,
-    "no-unused-expressions": 2,
-    "no-unused-vars": [1, {
-      "vars":"all",
-      "varsIgnorePattern": "React|[iI]gnored"
-    }],
-    "no-var": 2,
-    "no-whitespace-before-property": 2,
-    "object-curly-spacing": [2, "never"],
-    "object-shorthand": [2, "always", {
-      "avoidQuotes": true
-    }],
-    "padded-blocks": [2, "never"],
-    "quote-props": [2, "as-needed"],
-    "quotes": [2, "single", {
-      "avoidEscape": true,
-      "allowTemplateLiterals": true
-    }],
-    "radix": 2,
-    "rest-spread-spacing": [2, "never"],
-    "semi": [2, "always"],
-    "space-before-blocks": [2, {
-      "classes": "always",
-      "functions": "always",
-      "keywords": "always"
-    }],
-    "space-before-function-paren": [2, "never"],
-    "space-in-parens": [2, "never"],
-    "space-infix-ops": 2,
-    "space-unary-ops": [2, {
-      "nonwords": false,
-      "words": true
-    }],
-    "template-curly-spacing": [2, "never"],
-    "valid-jsdoc": [1, {
-      "requireReturn": false,
-      "requireParamDescription": false,
-      "requireReturnDescription": false
-    }],
-    "valid-typeof": 2,
-    "yield-star-spacing": [2, "after"],
-
-    "import/export": 2,
-    "import/imports-first": 2,
-    "import/no-duplicates": 2
-  }
+  "rules":{}
 }

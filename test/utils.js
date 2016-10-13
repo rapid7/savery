@@ -3,6 +3,7 @@ import sinon from 'sinon';
 
 import {
   DEFAULT_MIME_TYPE,
+  GLOBAL,
   LINK,
   MIME_TYPE_REGEXP,
   REVOKE_TIMEOUT,
@@ -19,6 +20,7 @@ import {
   revokeObjectUrl,
   saveWithDownloadAttribute,
   saveWithFileReader,
+  saveWithSaveMsBlob,
   setAutoBom,
   triggerClick
 } from '../src/utils';
@@ -111,7 +113,7 @@ test('if noop returns null', (t) => {
 test('if openPopupOrNavigate will correctly open a popup', (t) => {
   const href = 'http://foo.com';
 
-  const stub = sinon.stub(window, 'open');
+  const stub = sinon.stub(GLOBAL, 'open');
 
   openPopupOrNavigate(href);
 
@@ -162,18 +164,18 @@ test('if saveWithDownloadAttribute sets the attributes correctly and triggers cl
 });
 
 test('if saveWithFileReader will fire the correct events', async (t) => {
-  const originalFileReader = window.FileReader;
+  const originalFileReader = GLOBAL.FileReader;
 
-  const stub = sinon.stub(window, 'open');
+  const stub = sinon.stub(GLOBAL, 'open');
   const url = 'http://foo.com/';
 
-  window.FileReader = function() {
+  GLOBAL.FileReader = function() {
     this.result = url;
 
     return this;
   };
 
-  window.FileReader.prototype = {
+  GLOBAL.FileReader.prototype = {
     readAsDataURL() {
       this.onloadend();
     }
@@ -186,7 +188,27 @@ test('if saveWithFileReader will fire the correct events', async (t) => {
 
   stub.restore();
 
-  window.FileReader = originalFileReader;
+  GLOBAL.FileReader = originalFileReader;
+});
+
+test('if saveWithSaveMsBlob will fire the navigator function', (t) => {
+  const originalFn = GLOBAL.navigator.msSaveBlob;
+
+  const foo = 'foo';
+  const bar = 'bar';
+
+  let fired = false;
+
+  GLOBAL.navigator.msSaveBlob = function(blob, filename) {
+    fired = true;
+
+    t.is(blob, foo);
+    t.is(filename, bar);
+  };
+
+  saveWithSaveMsBlob(foo, bar);
+
+  GLOBAL.navigator.msSaveBlob = originalFn;
 });
 
 test('if setAutoBom will return the same blob if it does not match the regexp', (t) => {
