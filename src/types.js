@@ -1,10 +1,10 @@
 type FileEventHandlers = {
   onAbort: ?Function,
+  onAfterSave: ?Function,
+  onBeforeSave: ?Function,
+  onEndSave: ?Function,
   onError: ?Function,
-  onProgress: ?Function,
-  onWrite: ?Function,
-  onWriteStart: ?Function,
-  onWriteEnd: ?Function
+  onStartSave: ?Function
 };
 
 type Options = {
@@ -18,10 +18,10 @@ type Savery = {
   _createObjectUrlFromData: Function,
   _onAfterSave: Function,
   _onBeforeSave: Function,
+  _onEndSave: Function,
   _onError: Function,
   _onSave: Function,
-  _onWriteStart: Function,
-  _onWriteEnd: Function,
+  _onStartSave: Function,
   abort: Function,
   data: ?Blob,
   error: ?Error,
@@ -29,9 +29,9 @@ type Savery = {
   onAbort: Function,
   onAfterSave: Function,
   onBeforeSave: Function,
+  onEndSave: Function,
   onError: Function,
-  onWriteStart: Function,
-  onWriteEnd: Function,
+  onStartSave: Function,
   save: Function,
   status: string,
   type: string
